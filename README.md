@@ -1,3 +1,4 @@
+<pre>
 ＜!DOCTYPE HTML＞
 ＜html＞
 ＜body bgcolor="#000"＞
@@ -99,3 +100,4 @@ function MouseUp(){
 ＜/script＞
 ＜/body＞
 ＜/html＞
+</pre>
