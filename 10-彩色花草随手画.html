@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<body bgcolor="#000">
+<canvas id="myCanvas" width="1600" height="800" style="border:1px solid #808080;
+	position:absolute;left:100px;top:10px;background:#ffffff"
+onMouseMove="MouseMove(window.event.x-100,window.event.y-10)"
+onMouseDown="MouseDown(window.event.x-100,window.event.y-10)"
+onMouseUp="MouseUp()";
+	>
+Your browser does not support the canvas element.
+</canvas>
+<div id="div" style="border:2px solid #808080;
+	position:absolute;left:600px;top:820px;background:#FFFFCC">
+按下鼠标画画或写字，F5重来。---HTML+javascript编程:daode1212,2020-12-28</div>
+<script type="text/javascript">
+
+var c=document.getElementById("myCanvas");
+var cxt=c.getContext("2d");
+var x0=0;
+var y0=0;
+var flag=0;
+
+//记录鼠标已经按下:
+function MouseDown(x,y){
+	flag=1;
+	x0=x;
+	y0=y;
+}
+
+//记录鼠标已经弹起:
+function MouseUp(){
+	flag=0;
+}
+
+//在鼠标按下,并移动过程中绘画:
+function MouseMove(x,y){
+  if(flag==1){
+    /*画三同心圆片*/
+	cxt.save();//保持；
+	cxt.fillStyle="#"+parseInt(16777216*Math.random()).toString(16);
+	cxt.beginPath();
+	cxt.arc(x,y,10,0,Math.PI*2,true);
+	cxt.arc(x,y,7,0,Math.PI*2,true);
+	cxt.arc(x,y,4,0,Math.PI*2,true);		
+	cxt.closePath();
+	cxt.fill();
+	cxt.stroke(); //执行；
+	cxt.restore(); //恢复
+	
+	/*画连接曲线和放射线*/
+	 cxt.save();//保持；
+	 cxt.beginPath(); //开始独立的颜色;
+	 cxt.strokeStyle = "#"+parseInt(16777216*Math.random()).toString(16);//线色；			 
+	 cxt.lineWidth = 8;//线宽;
+	 cxt.moveTo(x0,y0);//移动到此；
+	 cxt.lineTo(x,y);//画至此；
+	 //放射线:
+	 for(var q=0;q<=6.28;q+=.3){   
+	   cxt.lineWidth = 2;//线宽;
+	   cxt.moveTo(x0,y0);//移动到此；
+	   cxt.lineTo(x+22*Math.sin(q),y+22*Math.cos(q));//画至此；
+	 } 
+	cxt.stroke(); //执行；
+	cxt.restore(); //恢复; 
+	x0=x;y0=y;
+  }
+}
+
+</script>
+</body>
+</html>
