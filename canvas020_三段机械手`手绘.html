@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="GB2312">
+    <title>测试canvas</title>
+	
+<style>
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.picker {
+	width: 300px;
+	height: 20px;
+	cursor: pointer;
+	left: 40px;
+	top: 40px;
+	color: #fff;
+}
+</style>
+	<script src="./colorpicker.js"></script>
+<script>
+	var range;
+	var ww=1200;//画布宽度
+	var hh=680;//画布高度
+	var t=0; //计时
+	var x0=0;
+	var y0=0;
+	var flg=0;
+	var xs=new Array();
+	var ys=new Array();
+	var canvas;//=document.getElementById('myCanvas');
+    var context;//=canvas.getContext("2d");
+	var count=0;
+	window.onload=function(){
+	canvas=document.getElementById('myCanvas');
+	context=canvas.getContext("2d");
+	range=document.getElementById("range")
+	}
+	function clear(){
+	    context.fillStyle ="rgb(220,220,220)";
+		context.fillRect(0,0,ww,hh);//全幅重绘	
+	}
+	
+	function clear_all(){
+		xs=new Array();
+		ys=new Array();
+		count=0;
+		clear();
+		draw(x0,y0)
+	}
+	
+	function clear_pre(){
+		xs[count]=new Array();
+		ys[count]=new Array();
+		
+		count--;
+		if(count<0)
+		count=0;
+		draw(x0,y0)
+	}
+	function draw(x,y){	  
+	clear();
+    x-=canvas.offsetLeft;
+    
+   
+   for(var i=0;i<count;i++){
+		  var arrx=new Array(xs[i]);
+		  var arry=new Array(ys[i]);
+		  context.beginPath();
+		  context.strokeStyle="rgb("+arrx[0][1]+","+arrx[0][2]+","+arrx[0][3]+")";
+		  context.lineWidth=arrx[0][4]/10;
+		  context.moveTo(arrx[0][5],arry[0][5]);
+		  for(var j=6;j<arrx[0].length-1;j++){
+		  //console.log(arrx[0][j]);
+			context.lineTo(arrx[0][j],arry[0][j]);					  
+		  }		
+			context.stroke();		  
+	}
+	
+   
+	
+    if(flg==1){
+    	  xs[count].push(x);
+		  ys[count].push(y);
+		  
+    	  for(var q=-7;q<7;q+=0.5){  
+				    //绘制线段集:			    
+				    context.beginPath();
+				    context.strokeStyle="rgb(255,255,0)";
+				    context.lineWidth=2;
+				    context.moveTo(x0,y0);
+				    context.lineTo(x0-20*Math.cos(q),y0-20*Math.sin(q));
+				    context.closePath();
+				    context.stroke();	
+		   }
+		   var arrx=new Array(xs[count]);
+		   var arry=new Array(ys[count]);	
+		   context.beginPath();
+			context.strokeStyle="rgb("+arrx[0][1]+","+arrx[0][2]+","+arrx[0][3]+")";
+			context.lineWidth=arrx[0][4]/10;;
+			context.moveTo(arrx[0][5],arry[0][5]);
+			for(var i=6;i<arrx[0].length-1;i++){
+				context.lineTo(arrx[0][i],arry[0][i]);
+			}
+			context.stroke();
+		    x0=x;
+		    y0=y;	
+			}		    
+			
+			
+					   
+	    //二臂结构逆解:
+	    var A=ww/2;
+	    var B=ww/2;
+	    var dx=x;
+	    var dy=y;
+	     
+	    var D=Math.sqrt(dx*dx+dy*dy);
+	    
+	    var g1=Math.acos((B*B+D*D-A*A)/(2*B*D));
+	    var g2=Math.acos((A*A+D*D-B*B)/(2*A*D));
+	    var g3=Math.acos((B*B+A*A-D*D)/(2*B*A));						    
+	    
+	    var ct=Math.atan2(dy,dx);
+	    var qx=A*Math.cos(g2+ct);
+	    var qy=A*Math.sin(g2+ct);
+	    
+	    
+	    var img=new Image()
+			img.src="../img3/pen.png"	
+			context.drawImage(img,x-14,y-100);
+	    
+	    
+	    //粗线段:
+			context.beginPath();
+   	  context.lineWidth=28;
+	    context.strokeStyle="rgb(0,0,188)";
+	    context.moveTo(x,y-100);
+	    context.lineTo(qx,qy);
+	    context.lineTo(0,0);						    
+	    context.stroke();	
+	    
+	    //细线段:
+			context.beginPath();
+   	  context.lineWidth=8;
+	    context.strokeStyle="rgb(250,250,255)";
+	    context.moveTo(x+4,y-108);
+	    context.lineTo(qx+4,qy-8);
+	    context.lineTo(4,-8);						    
+	    context.stroke();		    
+	    
+		    
+    	//绘制关节处圆片及末端的圆片:
+		    context.beginPath();
+		    context.fillStyle ="rgb(0,0,128)";
+		    context.arc(qx,qy,30,0,2*Math.PI);
+		    context.arc(x,y-100,30,0,2*Math.PI);
+		    context.closePath();
+		    context.fill()	
+    	
+    	
+    	//绘制关节处圆弧:
+		    context.beginPath();
+		    context.lineWidth=8;
+		    context.strokeStyle ="rgb(220,220,228)";
+		    context.arc(qx,qy,25,6*Math.PI/5,-Math.PI/5);
+		    //context.closePath();
+		    context.stroke();
+		    
+		  //绘制末端的圆弧:  
+			  context.beginPath();
+		    context.lineWidth=8;
+		    context.strokeStyle ="rgb(220,220,228)";
+		    context.arc(x,y-100,25,7*Math.PI/6,-Math.PI/6);
+		    //context.closePath();
+		    context.stroke();		    	
+		    	
+    	  //动画控制:
+    		//setTimeout("fun01()", 10);
+        //t+=1;    	
+    	  //if(t>2*360)t=0;
+    }
+    
+//鼠标按下时:
+function initP(x,y){
+	//cxt.clearRect(0,0,1200,680);	 //擦除；
+	var color=document.getElementById("colorInfo").style.color;
+	//console.log(color);
+	color=color.substr(4,color.length-5)
+	color=color.split(',');
+
+	console.log(range.value);
+	x0=x;y0=y;
+	xs[count]=new Array();
+	ys[count]=new Array();
+	xs[count].push(-2);
+	ys[count].push(-2);	
+	xs[count].push(color[0]);
+	xs[count].push(color[1]);
+	xs[count].push(color[2]);
+	ys[count].push(color[0]);
+	ys[count].push(color[1]);
+	ys[count].push(color[2]);
+	xs[count].push(range.value);
+	ys[count].push(range.value);
+
+	flg=1;
+}
+
+//清空画面:
+function CLS(){
+	cxt.clearRect(0,0,1200,680);	 //擦除；
+}
+
+
+//鼠标释放后:
+function stop(){
+	flg=0;
+	xs[count].push(-1);
+	ys[count].push(-1);
+	count++;
+}    
+    
+</script>    
+    
+</head>
+<body >
+
+<center>
+<canvas id="myCanvas" width="1200px" height="680px"
+onMouseMove="draw(window.event.x,window.event.y)"
+onMouseDown="initP(window.event.x,window.event.y)"
+onMouseUp="stop()";		
+	></canvas>
+
+
+
+
+
+<div id="main" style="width:100%;">
+<input type="color" name="color" id="color" onchange="changeColor()"> 
+
+　　<span id="colorInfo"></span>
+<script type="text/javascript">
+　　var color = document.getElementById("color"); 　　      　　　　　　　　//通过使用 getElementById() 来访问 <color> 元素
+　　var colorInfo = document.getElementById("colorInfo");
+　　colorInfo.style.color = color.value; 　　　　　　　　　　　　　　　　 //给<span>的字体加颜色
+　　colorInfo.innerHTML = color.value;　　　　　　　　	　　　　　　　　	//给<span>加内容(<color>的值)
+　　function changeColor(){ 　　　　　　　　　　　　　　　　　　　　 //改变颜色的事件
+　　　　colorInfo.style.color = color.value;
+　　　　colorInfo.innerHTML = color.value; 
+　　}
+</script>
+<div style="width:35%;float:left;">
+<h4>建议用支持canvas组件的浏览器打开,屏幕分辨率>1200*680</h4>
+</div>
+<input type="range" id="range" name="range" value="50">选择尺寸
+<div style="width:12.5%;float:left;">
+<button type="button" onclick="clear_all()">清除</button>	
+</div>
+<div style="width:12.5%;float:left;">
+<button type="button" onclick="clear_pre()">撤销</button>	
+</div>
+</div>
+</center>
+</body>
+</html>
