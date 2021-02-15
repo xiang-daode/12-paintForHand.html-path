@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="GB2312">
+    <title>测试canvas</title>
+<script>
+	
+	var ww=1200;//画布宽度
+  var hh=760;//画布高度
+	var t=0; //计时
+	
+	function fun01(){
+    var canvas=document.getElementById('myCanvas');
+    var context=canvas.getContext("2d");
+    
+    context.fillStyle ="rgb(220,220,220)";
+    context.fillRect(0,0,ww,hh);//全幅重绘
+					
+		 var t1=parseFloat(document.getElementById('T1').value);			
+		 var t2=parseFloat(document.getElementById('T2').value);						
+		 var t3=parseFloat(document.getElementById('T3').value);			
+		 var t4=parseFloat(document.getElementById('T4').value);	
+		 
+		 						    
+		  //留下轨迹:
+		  for(var i=0;i<t;i+=1){
+		    var x=ww/1.5+hh/4*(Math.cos(i*2*Math.PI/t1)+0.25*Math.cos(i*2*Math.PI/t3));
+		    var y=hh/2.0+hh/4*(Math.sin(i*2*Math.PI/t2)+0.25*Math.sin(i*2*Math.PI/t4));
+		    
+		    //绘制线段集:
+		    context.beginPath();
+		    context.strokeStyle="rgb(0,0,255)";
+		    context.lineWidth=1;
+		    context.moveTo(ww/1.5,hh/2);
+		    context.lineTo(x,y);
+		    context.closePath();
+		    context.stroke();		
+		    	    
+		    //绘制圆片集:
+		    context.beginPath();
+		    context.fillStyle ="rgb("+(x % 255)+","+((x * y) % 255)+","+(y % 255)+")";
+		    context.arc(x,y,10,0,2*Math.PI);		    
+		    context.closePath();
+		    context.fill();	
+	    }
+						    
+						   
+	    //二臂结构逆解:
+	    var A=ww/1.9;
+	    var B=ww/2.1;
+	    var dx=x;
+	    var dy=y;
+	     
+	    var D=Math.sqrt(dx*dx+dy*dy);
+	    
+	    var g1=Math.acos((B*B+D*D-A*A)/(2*B*D));
+	    var g2=Math.acos((A*A+D*D-B*B)/(2*A*D));
+	    var g3=Math.acos((B*B+A*A-D*D)/(2*B*A));						    
+	    
+	    var ct=Math.atan2(dy,dx);
+	    var qx=A*Math.cos(g2+ct);
+	    var qy=A*Math.sin(g2+ct);
+	    
+	    
+	    var img=new Image()
+			img.src="../img3/pen.png"	
+			context.drawImage(img,x-14,y-100);
+	    
+	    
+	    //粗线段:
+			context.beginPath();
+   	  context.lineWidth=28;
+	    context.strokeStyle="rgb(0,0,188)";
+	    context.moveTo(x,y-100);
+	    context.lineTo(qx,qy);
+	    context.lineTo(0,0);						    
+	    context.stroke();	
+	    
+	    //细线段:
+			context.beginPath();
+   	  context.lineWidth=8;
+	    context.strokeStyle="rgb(250,250,255)";
+	    context.moveTo(x+4,y-108);
+	    context.lineTo(qx+4,qy-8);
+	    context.lineTo(4,-8);						    
+	    context.stroke();		    
+	    
+	    
+		    
+    	//绘制关节处圆片及末端的圆片:
+		    context.beginPath();
+		    context.fillStyle ="rgb(0,0,128)";
+		    context.arc(qx,qy,30,0,2*Math.PI);
+		    context.arc(x,y-100,30,0,2*Math.PI);
+		    context.closePath();
+		    context.fill()	
+    	
+    	
+    	//绘制关节处圆弧:
+		    context.beginPath();
+		    context.lineWidth=8;
+		    context.strokeStyle ="rgb(220,220,228)";
+		    context.arc(qx,qy,25,6*Math.PI/5,-Math.PI/5);
+		    //context.closePath();
+		    context.stroke();
+		  //绘制末端的圆弧:  
+			  context.beginPath();
+		    context.lineWidth=8;
+		    context.strokeStyle ="rgb(220,220,228)";
+		    context.arc(x,y-100,25,7*Math.PI/6,-Math.PI/6);
+		    //context.closePath();
+		    context.stroke();		    	
+		    	
+    	  //动画控制:
+    		setTimeout("fun01()", 10);
+        t+=1;    	
+    	  if(t>2*360)t=0;
+    }
+    
+    
+    
+</script>    
+    
+</head>
+<body onLoad="fun01()">
+<center>
+	T1=<input type="text" value="360" id="T1">, T2=<input type="text" value="360" id="T2">
+	T3=<input type="text" value="30" id="T3">, T4=<input type="text" value="30" id="T4"><br />
+<canvas id="myCanvas" width="1200px" height="760px"></canvas>
+<h6>建议用火狐浏览器打开,屏幕分辨率>1200*760</h6>
+</center>
+</body>
+</html>
