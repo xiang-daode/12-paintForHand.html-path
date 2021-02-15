@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="GB2312">
+    <title>测试canvas</title>
+<script>
+	var ww=1200;
+  var hh=760;
+	var t=0; 
+	
+	function fun01(){
+    var canvas=document.getElementById('myCanvas');
+    var context=canvas.getContext("2d");
+    
+    context.fillStyle ="rgb(220,220,220)";
+    context.fillRect(0,0,ww,hh);
+						    
+		  //留下轨迹:
+		  for(var i=0;i<t;i+=3){
+		    var x=0.7*ww+hh/3*Math.cos(i*2*Math.PI/360);
+		    var y=hh/2+hh/3*Math.sin(i*2*Math.PI/360);
+		    /*绘制线段集:
+		    context.beginPath();
+		    context.strokeStyle="rgb(255,255,255)";
+		    context.lineWidth=1;
+		    context.moveTo(x,hh/2);
+		    context.lineTo(x,y);
+		    context.closePath();
+		    context.stroke();		
+		    */	    
+		    //绘制圆片集:
+		    context.beginPath();
+		    context.fillStyle ="rgb("+(x % 255)+","+((x * y) % 255)+","+(y % 255)+")";
+		    context.arc(x,y,20,0,2*Math.PI);
+		    //context.lineTo(x,y);
+		    context.closePath();
+		    context.fill();	
+	    }
+						    
+						   
+	    //二臂结构:
+	    var A=ww/1.75;
+	    var B=ww/2.0;
+	    var dx=x;
+	    var dy=y;
+	     
+	    var D=Math.sqrt(dx*dx+dy*dy);
+	    
+	    var g1=Math.acos((B*B+D*D-A*A)/(2*B*D));
+	    var g2=Math.acos((A*A+D*D-B*B)/(2*A*D));
+	    var g3=Math.acos((B*B+A*A-D*D)/(2*B*A));						    
+	    
+	    var ct=Math.atan2(dy,dx);
+	    var qx=A*Math.cos(g2+ct);
+	    var qy=A*Math.sin(g2+ct);
+	    
+			context.beginPath();
+   	  context.lineWidth=48;
+	    context.strokeStyle="rgb(0,0,155)";
+	    context.moveTo(x,y);
+	    context.lineTo(qx,qy);
+	    context.lineTo(0,0);						    
+	    context.stroke();	
+		    
+		    
+		   context.beginPath();
+		   context.fillStyle ="rgb(0,0,88)";
+		   context.arc(0,0,60,0,2*Math.PI);
+		   context.closePath();
+		   context.fill();	 
+		    
+		   context.beginPath();
+		   context.fillStyle ="rgb(0,0,88)";
+		   context.arc(qx,qy,40,0,2*Math.PI);
+		   context.closePath();
+		   context.fill();	
+		   
+		   context.beginPath();
+		   context.fillStyle ="rgb(255,0,88)";
+		   context.arc(x,y,40,0,2*Math.PI);
+		   context.closePath();
+		   context.fill();	
+		    
+		    
+		    
+    	
+    	setTimeout("fun01()", 10);
+    	t+=3;
+    	if(t>ww)t=0;
+    }
+    
+    
+    
+</script>    
+    
+</head>
+<body onLoad="fun01()">
+<center>
+<canvas id="myCanvas" width="1200px" height="760px"></canvas>
+</center>
+</body>
+</html>
